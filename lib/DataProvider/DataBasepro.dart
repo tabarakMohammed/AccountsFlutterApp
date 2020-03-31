@@ -101,7 +101,7 @@ try {
     return null;
   } else {
     // Copy
-    ByteData data = await rootBundle.load(join(path.path));
+    ByteData data = await rootBundle.load(join("assets","mydb.db"));
     List<int> bytes =
     data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     FilePath getPath = new FilePath();
