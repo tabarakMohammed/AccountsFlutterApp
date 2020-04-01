@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:accounts/infoModel/Model.dart';
@@ -30,7 +29,7 @@ class SqlLight{
 
     String databasePath = await getDatabasesPath();
     String path = join(databasePath , 'Acounts.db');
-    var db = await openDatabase(path , version: 2 , onCreate: _onCreate);
+    var db = await openDatabase(path , version: 3 , onCreate: _onCreate);
     return db;
   }
 
@@ -88,34 +87,29 @@ class SqlLight{
 
   Future<File> backup( String fileName) async{
 
-   // var databasesPath = await getDatabasesPath();
-   /// var path = join(databasesPath, "example.db");
-      var path = await db;
-        //path.path;
-// Check if the database exists
+    var path = await db;
     var exists = await databaseExists(path.path);
-try {
-  if (!exists) {
-    // Should happen only the first time you launch your application
-    print("no data here");
-    return null;
-  } else {
-    // Copy
-    ByteData data = await rootBundle.load(join("assets","mydb.db"));
-    List<int> bytes =
-    data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    FilePath getPath = new FilePath();
-    final pathd = await getPath.appFile();
+    var myDataPath =  path.path;
 
-    // Write and flush the bytes written
-    print("Opening existing database");
-    return await File('$pathd/$fileName.db').writeAsBytes(bytes, flush: true);
+    try {
+      if (!exists) {
+        print("data not exist");
+        return null;
+      } else {
+        // Copy
+        var data = await File(myDataPath).readAsBytes();
+        //print(await File(mydatapath).readAsBytes());
+        List<int> bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        FilePath getPath = new FilePath();
+        final pathd = await getPath.appFile();
+        return await File('$pathd/$fileName'+'.db').writeAsBytes(bytes);
 
-  }
-} catch(e){
-  print(e);
-  return null;
-}
+      }
+    } catch(e){
+      print(e);
+      return null;
+    }
 
   }
   Future<List> readExsSqlBase(var path) async{
